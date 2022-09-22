@@ -7,12 +7,18 @@ import { ApolloServer, gql } from "apollo-server";
  * 4. argument 를 사용하여 조건을 구체화 할 수 있다
  */
 const typeDefs = gql`
+  """
+  트위트
+  """
   type Tweet {
     id: ID!
     text: String!
     author: User!
   }
 
+  """
+  사용자
+  """
   type User {
     id: ID!
     firstName: String!
@@ -22,16 +28,37 @@ const typeDefs = gql`
 
   # Get
   type Query {
+    """
+    모든 트위트를 조회한다
+    """
     allTweets: [Tweet!]!
-    tweet(id: ID!): Tweet
+    """
+    아이디를 입력받아 트위트를 조회한다
+    """
+    tweet(id: ID!): Tweet!
+    """
+    핑퐁 테스트
+    """
     ping: String!
+    """
+    모든 유저를 조회한다
+    """
     allUsers: [User!]!
   }
 
   # Post, Put, Patch, Delete
   type Mutation {
+    """
+    트위트를 등록한다
+    """
     postTweet(text: String, userId: ID): Tweet!
+    """
+    트위트를 업데이트 한다
+    """
     updateTweet(id: ID, text: String): Tweet
+    """
+    트위트를 삭제한다
+    """
     deleteTweet(id: ID!): Boolean!
   }
 `;
