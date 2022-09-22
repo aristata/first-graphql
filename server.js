@@ -10,7 +10,7 @@ const typeDefs = gql`
   type Tweet {
     id: ID!
     text: String!
-    author: User!
+    author: User
   }
 
   type User {
@@ -47,6 +47,36 @@ const resolvers = {
     ping() {
       return "pong";
     }
+  },
+  Mutation: {
+    postTweet(_, { text }) {
+      // 새 tweet 객체를 생성한다
+      const newTweet = {
+        id: tweets.length + 1,
+        text: text
+      };
+
+      // tweets 배열에 새 tweet 객체를 추가한다
+      tweets.push(newTweet);
+
+      // 새 tweet 객체를 반환한다
+      return newTweet;
+    },
+    deleteTweet(_, { id }) {
+      // 먼저 id 로 tweet 를 찾는다
+      const foundTweet = tweets.find((tweet) => tweet.id === id);
+
+      // tweet 를 찾지 못했으면 함수를 종료한다
+      if (!foundTweet) return false;
+
+      // tweet 를 찾았으면 tweets 에서 tweet 를 제거한다
+      // 구현할 로직은 tweets 의 tweet 들 중에서 id 가 다른 것들만 찾아 새로운 배열을 tweets 에 저장한다
+      tweets = tweets.filter((tweet) => tweet.id !== foundTweet.id);
+
+      // deleteTweet 함수는 결과로 boolean 값을 반환한다
+      // 코드가 여기까지 진행되었다면 데이터가 삭제된 것과 같은 효과가 있기 때문에 true 를 반환한다
+      return true;
+    }
   }
 };
 
@@ -57,45 +87,13 @@ server.listen().then(({ url }) => {
 });
 
 // fake db
-const tweets = [
+let tweets = [
   {
     id: "1",
-    text: "hello",
-    author: {
-      id: "1",
-      username: "ace"
-    }
+    text: "hello"
   },
   {
     id: "2",
-    text: "world",
-    author: {
-      id: "2",
-      username: "base"
-    }
-  },
-  {
-    id: "3",
-    text: "graphql",
-    author: {
-      id: "1",
-      username: "ace"
-    }
-  },
-  {
-    id: "4",
-    text: "first",
-    author: {
-      id: "3",
-      username: "cane"
-    }
-  },
-  {
-    id: "5",
-    text: "sample",
-    author: {
-      id: "2",
-      username: "base"
-    }
+    text: "world"
   }
 ];
