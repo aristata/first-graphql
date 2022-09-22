@@ -10,14 +10,14 @@ const typeDefs = gql`
   type Tweet {
     id: ID!
     text: String!
-    author: User
+    author: User!
   }
 
   type User {
     id: ID!
-    username: String!
-    firstname: String
-    lastname: String
+    firstName: String!
+    lastName: String!
+    fullName: String!
   }
 
   # Get
@@ -25,6 +25,7 @@ const typeDefs = gql`
     allTweets: [Tweet!]!
     tweet(id: ID!): Tweet
     ping: String!
+    allUsers: [User!]!
   }
 
   # Post, Put, Patch, Delete
@@ -46,14 +47,18 @@ const resolvers = {
     },
     ping() {
       return "pong";
+    },
+    allUsers() {
+      return users;
     }
   },
   Mutation: {
-    postTweet(_, { text }) {
+    postTweet(_, { text, userId }) {
       // 새 tweet 객체를 생성한다
       const newTweet = {
         id: tweets.length + 1,
-        text: text
+        text: text,
+        userId: userId
       };
 
       // tweets 배열에 새 tweet 객체를 추가한다
@@ -77,6 +82,16 @@ const resolvers = {
       // 코드가 여기까지 진행되었다면 데이터가 삭제된 것과 같은 효과가 있기 때문에 true 를 반환한다
       return true;
     }
+  },
+  User: {
+    fullName({ firstName, lastName }) {
+      return `${firstName} ${lastName}`;
+    }
+  },
+  Tweet: {
+    author({ userId }) {
+      return users.find((user) => user.id === userId);
+    }
   }
 };
 
@@ -90,10 +105,25 @@ server.listen().then(({ url }) => {
 let tweets = [
   {
     id: "1",
-    text: "hello"
+    text: "hello",
+    userId: "1"
   },
   {
     id: "2",
-    text: "world"
+    text: "world",
+    userId: "2"
+  }
+];
+
+let users = [
+  {
+    id: "1",
+    firstName: "Seongmin",
+    lastName: "Jang"
+  },
+  {
+    id: "2",
+    firstName: "Aristata",
+    lastName: "Jang"
   }
 ];
