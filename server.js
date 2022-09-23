@@ -51,7 +51,7 @@ const typeDefs = gql`
     """
     트위트를 등록한다
     """
-    postTweet(text: String, userId: ID): Tweet!
+    postTweet(text: String, userId: ID): Tweet
     """
     트위트를 업데이트 한다
     """
@@ -81,6 +81,12 @@ const resolvers = {
   },
   Mutation: {
     postTweet(_, { text, userId }) {
+      // 입력받은 userId 가 유효한지 확인하기 위해 유저조회를 먼저 실행한다
+      const foundUser = users.find((user) => user.id === userId);
+
+      // 만약 발견된 유저가 없으면 포스트 트윗 함수를 종료한다
+      if (!foundUser) return null;
+
       // 새 tweet 객체를 생성한다
       const newTweet = {
         id: tweets.length + 1,
