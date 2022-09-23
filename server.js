@@ -1,4 +1,5 @@
 import { ApolloServer, gql } from "apollo-server";
+import fetch from "node-fetch";
 
 /**
  * 1. 우리 data 의 shape 를 graphql 한테 설명해줘야 한다
@@ -26,6 +27,30 @@ const typeDefs = gql`
     fullName: String!
   }
 
+  type Movie {
+    id: Int!
+    url: String!
+    imdb_code: String!
+    title: String!
+    title_english: String!
+    title_long: String!
+    slug: String!
+    year: Int!
+    rating: Float!
+    runtime: Float!
+    genres: [String]!
+    summary: String
+    description_full: String!
+    synopsis: String
+    yt_trailer_code: String!
+    language: String!
+    background_image: String!
+    background_image_original: String!
+    small_cover_image: String!
+    medium_cover_image: String!
+    large_cover_image: String!
+  }
+
   # Get
   type Query {
     """
@@ -44,6 +69,8 @@ const typeDefs = gql`
     모든 유저를 조회한다
     """
     allUsers: [User!]!
+    allMovies: [Movie!]!
+    movie(id: String!): Movie
   }
 
   # Post, Put, Patch, Delete
@@ -77,6 +104,16 @@ const resolvers = {
     },
     allUsers() {
       return users;
+    },
+    allMovies() {
+      return fetch("https://yts.mx/api/v2/list_movies.json")
+        .then((r) => r.json())
+        .then((json) => json.data.movies);
+    },
+    movie(_, { id }) {
+      return fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`)
+        .then((r) => r.json())
+        .then((json) => json.data.movie);
     }
   },
   Mutation: {
